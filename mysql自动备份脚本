@@ -1,0 +1,49 @@
+首先安装 mariadb数据库：
+  yum install -y mariadb mariadb-server #mariadb是客户端，mariadb-server是服务端
+查看是否安装完成
+  rpm -qf /usr/bin/mysql
+启动数据库
+  systemctl start mariadb
+登录mysql:
+  mysqladmin -u root password "123456"
+
+
+前期准备完成
+开始进行备份：
+  思路：
+    1.检查运行环境：目录是否存在，时间，权限，用户
+    2.运行要执行的命令：备份，导出数据。。。
+    3.把命令执行过程中无用的文件删除
+    4.弹出命令运行成功的消息
+    
+创建mysql-back-auto.sh,内容如下：
+#!/bin/bash
+#auto backup mysql
+
+#Define PATH
+BAKDIR=/data/backup/mysql/`date +%Y-%m-%d`
+MYSQLDB=ocean
+MYSQLUSR=root
+MYSQLPW=123456
+
+#must user root user to run scripts
+if
+  [$UID -ne 0];then
+  echo This script must use the root user!!!
+  sleep 2
+  exit 0
+fi
+
+#Use mysqldump backup mysql
+/usr/bin/msyqldump -u$MYSQLUSR -p$MYSQLPW $MYSQLDB > $BAKDIR/${MYSQLDB}_db.sql
+cd $BAKDIR;tar -czf ${MYSQLDB}_db.tar.gz *.sql
+
+#查找备份目录下以.sql结尾的文件并删除
+find $BAKDIR -type f -name *.sql -exec rm -rf {} \;
+#如果数据库备份成功，则打印成功，并删除备份目录30天以前的目录
+[$? -eq 0] && echo "This `date +%Y-%m-%d` MYSQL BACKUP is SUCCESS"
+cd /data/backup/mysql/ && find . -type d -mtime +30|xargs rm -rf
+echo "The mysql backup sucessfully"
+
+
+
