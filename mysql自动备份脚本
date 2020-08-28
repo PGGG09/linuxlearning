@@ -28,20 +28,20 @@ MYSQLPW=123456
 
 #must user root user to run scripts
 if
-  [$UID -ne 0];then
+  [ $UID -ne 0 ];then
   echo This script must use the root user!!!
   sleep 2
   exit 0
 fi
 
 #Use mysqldump backup mysql
-/usr/bin/msyqldump -u$MYSQLUSR -p$MYSQLPW $MYSQLDB > $BAKDIR/${MYSQLDB}_db.sql
+/usr/bin/mysqldump -u$MYSQLUSR -p$MYSQLPW $MYSQLDB > $BAKDIR/${MYSQLDB}_db.sql
 cd $BAKDIR;tar -czf ${MYSQLDB}_db.tar.gz *.sql
 
 #查找备份目录下以.sql结尾的文件并删除
 find $BAKDIR -type f -name *.sql -exec rm -rf {} \;
 #如果数据库备份成功，则打印成功，并删除备份目录30天以前的目录
-[$? -eq 0] && echo "This `date +%Y-%m-%d` MYSQL BACKUP is SUCCESS"
+[ $? -eq 0 ] && echo "This `date +%Y-%m-%d` MYSQL BACKUP is SUCCESS"
 cd /data/backup/mysql/ && find . -type d -mtime +30|xargs rm -rf
 echo "The mysql backup sucessfully"
 
