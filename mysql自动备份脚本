@@ -21,10 +21,15 @@
 #auto backup mysql
 
 #Define PATH
-BAKDIR=/data/backup/mysql/`date +%Y-%m-%d`
+BAKDIR="/data/backup/mysql/`date +%Y-%m-%d`"
 MYSQLDB=ocean
 MYSQLUSR=root
 MYSQLPW=123456
+
+#Check if the BAKDIR exists
+if [ ! -d "$BAKDIR" ]; then
+  mkdir -p $BAKDIR
+fi
 
 #must user root user to run scripts
 if
