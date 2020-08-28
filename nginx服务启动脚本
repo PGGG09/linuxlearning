@@ -1,0 +1,54 @@
+vim /etc/init.d/nginx
+#!/bin/bash
+#chkconfig:
+#description:nginx run
+
+#nginx 启动脚本
+PATH=/data/soft/nginx
+DESC="nginx daemon"
+NAME=nginx
+DAEMON=$PATH/sbin/$NAME 
+CONFIGFILE=$PATH/$NAME.conf
+PIDFILE=$PATH/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+[-x "$DAEMON"] || exit 0
+do_start()
+{
+  $DAEMON -c $CONFIGFILE || echo -n "nginx already running"
+}
+do_stop()
+{
+  $DAEMON -s stop || echo -n "nginx not running"
+}
+do_reload()
+{
+  $DAEMON -s reload || echo -n "nginx can't reload"
+}
+case "$1" in 
+  start)
+    echo -n "Starting $DESC:$NAME"
+    do_start
+    echo "."
+  ;;
+  stop)
+    echo -n "Stoping $DESC:$NAME"
+    do_stop
+    echo "."
+  ;;
+  reload|graceful)
+    echo -n "Reloading $DESC configuration..."
+    do_reload
+    echo "."
+  ;;
+  restart)
+    echo -n "Restarting $DESC:$NAME"
+    do_stop
+    do_start
+    echo "."
+  ;;
+  *)
+    echo "Usage:$SCRIPTNAME {start|sotp|reload|restart}" >&2
+    exit 3
+  ;;
+esac
+exit 0
