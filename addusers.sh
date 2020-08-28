@@ -1,4 +1,4 @@
-while:
+while :
 do
   read -p "Please enter prefix & password & num:" pre pass num
   printf "User info:
